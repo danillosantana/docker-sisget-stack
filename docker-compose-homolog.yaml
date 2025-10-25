@@ -1,0 +1,117 @@
+version: '3.6'
+
+x-common-variables: &common-variables
+  SIS_MICROSERVICE_USUARIO: http://sis-usuario:8080
+  SIS_MICROSERVICE_CAIXA: http://sis-caixa:8080
+
+  SPRING_PROFILES_ACTIVE: "default,prod"
+  SPRING_JDBC_URL: "jdbc:mysql://mysql-service:3306/sisget_prod?serverTimezone=America/Sao_Paulo"
+  SPRING_DATASOURCE_USERNAME: "root"
+  SPRING_DATASOURCE_PASSWORD: "root"
+
+  JWT_SECRET: tTw2sXXOc4lJn63lLAItQPu7BkBhH5E2O1u8NIMqCz1pwuR7warCqc9rDAPL6UDLLyJa6XH8L8o7s65fXmhEFhxIiC
+  JWT_EXPIRATION: 86400000
+
+  JAVA_OPTIONS: "-Duser.timezone=GMT-3"
+  TZ: "America/Sao_Paulo"
+
+
+services:
+
+  # Service Components
+
+  mysql-service:
+    image: mysql/mysql-server:latest
+    container_name: sisget-mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=sisget_prod
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/mysql-data:/var/lib/mysql
+    networks:
+      - sisget-network
+
+
+
+   #MicroServices
+
+  sis-gateway:
+    image: dsantana87/sis-gateway:latest
+    container_name: sis-gateway
+    restart: always
+    environment:
+      <<: *common-variables
+    ports:
+      - "8080:8080"
+    networks:
+      - sisget-network
+
+  sis-caixa:
+    image: dsantana87/sis-caixa:latest
+    container_name: sis-caixa
+    restart: always
+    environment:
+      <<: *common-variables
+    ports:
+      - "8080"
+    depends_on:
+      - mysql-service
+    networks:
+      - sisget-network
+
+  sis-auth:
+    image: dsantana87/sis-auth:latest
+    container_name: sis-auth
+    restart: always
+    environment:
+      <<: *common-variables
+    ports:
+      - "8080"
+    depends_on:
+      - mysql-service
+    networks:
+      - sisget-network
+
+  sis-relatorio:
+    image: dsantana87/sis-relatorio:latest
+    container_name: sis-relatorio
+    restart: always
+    environment:
+      <<: *common-variables
+    ports:
+      - "8080"
+    depends_on:
+      - mysql-service
+    networks:
+      - sisget-network
+
+  sis-usuario:
+    image: dsantana87/sis-usuario:latest
+    container_name: sis-usuario
+    restart: always
+    environment:
+      <<: *common-variables
+    ports:
+      - "8080"
+    depends_on:
+      - mysql-service
+    networks:
+      - sisget-network
+
+  # Front-End
+
+  sisget-client:
+    image: dsantana87/sisget-client:latest
+    container_name: sisget-client
+    restart: always
+    ports:
+      - "4200:80"
+    networks:
+      - sisget-network
+
+networks:
+  sisget-network:
+    driver: bridge
