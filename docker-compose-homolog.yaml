@@ -21,8 +21,7 @@ services:
     image: traefik:v3.5.3
     command:
       - "--providers.docker.swarm=true"
-      - "providers.swarm.endpoint=unix:///var/run/docker.sock"
-      - "--providers.docker.exposedbydefault=false"
+      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.le.acme.httpchallenge=true"
