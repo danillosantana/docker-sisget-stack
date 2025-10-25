@@ -79,7 +79,7 @@ services:
       - sisget-network
 
   sis-auth:
-    image: sis-auth:latest
+    image: dsantana87/sis-auth:latest
     container_name: sis-auth
     restart: always
     environment:
