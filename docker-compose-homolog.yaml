@@ -18,7 +18,7 @@ x-common-variables: &common-variables
 services:
 
   traefik:
-    image: traefik:v2.14
+    image: traefik:v3.5.3
     command:
       - "--providers.docker.swarmmode=true"
       - "--providers.docker.exposedbydefault=false"
