@@ -47,7 +47,7 @@ services:
       - sisget-network
 
   sisget-client:
-    image: dsantana87/sis-client:1.0.0
+    image: dsantana87/sis-client:latest
     container_name: sisget-client
     deploy:
       labels:
