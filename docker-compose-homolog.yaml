@@ -60,7 +60,7 @@ services:
       - sisget-network
 
   sis-gateway:
-    image: dsantana87/sis-gateway:1.0.0
+    image: dsantana87/sis-gateway:latest
     deploy:
       labels:
         - "traefik.enable=true"

@@ -18,3 +18,9 @@ docker service ps sisget-<nome-do-serviço>
 4 Ver logs:
 
 docker service logs -f <nome-do-serviço>
+
+
+
+'docker build -t dsantana87/sis-gateway:latest .'
+
+docker push dsantana87/sis-gateway:latest 
