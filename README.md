@@ -1,16 +1,20 @@
 ⚙️ Comandos para implantar
 
-1️⃣ Iniciar o Swarm (uma vez apenas):
+1 Iniciar o Swarm (uma vez apenas):
 
 docker swarm init
 
 
-2️⃣ Implantar a stack:
+2 Implantar a stack:
 
 docker stack deploy -c docker-compose.yml sisget
 
 
-3️⃣ Ver status:
+3 Ver status:
 
 docker stack services sisget
 docker service ps sisget-<nome-do-serviço>
+
+4 Ver logs:
+
+docker service logs -f <nome-do-serviço>

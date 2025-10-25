@@ -1,4 +1,4 @@
-version: '3.6'
+version: "3.8"
 
 x-common-variables: &common-variables
   SIS_MICROSERVICE_USUARIO: http://sis-usuario:8080
@@ -15,103 +15,66 @@ x-common-variables: &common-variables
   JAVA_OPTIONS: "-Duser.timezone=GMT-3"
   TZ: "America/Sao_Paulo"
 
-
 services:
 
-  # Service Components
+  traefik:
+    image: traefik:v2.14
+    command:
+      - "--providers.docker.swarmmode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-letsencrypt:/letsencrypt"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - sisget-network
 
-#  mysql-service:
-#    image: mysql/mysql-server:1.0.0
-#    container_name: sisget-mysql
-#    restart: always
-#    environment:
-#      - MYSQL_DATABASE=sisget_prod
-#      - MYSQL_ROOT_PASSWORD=root
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - ./database/mysql-data:/var/lib/mysql
-#    networks:
-#      - sisget-network
-
-
-   #MicroServices
+  sisget-client:
+    image: sisget-client:latest
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.frontend.rule=Host(`18.231.153.127`)"
+        - "traefik.http.routers.frontend.entrypoints=web"
+        - "traefik.http.routers.frontend.tls=false"
+      replicas: 1
+    networks:
+      - sisget-network
 
   sis-gateway:
     image: dsantana87/sis-gateway:1.0.0
-    container_name: sis-gateway
-    restart: always
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.service1.rule=Host(`18.231.153.127`)"
+        - "traefik.http.routers.service1.entrypoints=web"
+        - "traefik.http.routers.service1.tls=false"
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     environment:
       <<: *common-variables
     ports:
-      - "8080:8080"
+      - "8080"
     networks:
       - sisget-network
-
-#  sis-caixa:
-#    image: dsantana87/sis-caixa:1.0.0
-#    container_name: sis-caixa
-#    restart: always
-#    environment:
-#      <<: *common-variables
-#    ports:
-#      - "8080"
-#    depends_on:
-#      - mysql-service
-#    networks:
-#      - sisget-network
-#
-#  sis-auth:
-#    image: dsantana87/sis-auth:1.0.0
-#    container_name: sis-auth
-#    restart: always
-#    environment:
-#      <<: *common-variables
-#    ports:
-#      - "8080"
-#    depends_on:
-#      - mysql-service
-#    networks:
-#      - sisget-network
-#
-#  sis-relatorio:
-#    image: dsantana87/sis-relatorio:1.0.0
-#    container_name: sis-relatorio
-#    restart: always
-#    environment:
-#      <<: *common-variables
-#    ports:
-#      - "8080"
-#    depends_on:
-#      - mysql-service
-#    networks:
-#      - sisget-network
-#
-#  sis-usuario:
-#    image: dsantana87/sis-usuario:1.0.0
-#    container_name: sis-usuario
-#    restart: always
-#    environment:
-#      <<: *common-variables
-#    ports:
-#      - "8080"
-#    networks:
-#      - sisget-network
-#    depends_on:
-#      - mysql-service
-
-  # Front-End
-
-  sisget-client:
-    image: dsantana87/sisget-client:1.0.0
-    container_name: sisget-client
-    restart: always
-    ports:
-      - "4200:80"
-    networks:
-      - sisget-network
-
 
 networks:
   sisget-network:
     driver: overlay
+
+volumes:
+  traefik-letsencrypt:
