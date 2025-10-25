@@ -46,7 +46,7 @@ services:
       - sisget-network
 
   sisget-client:
-    image: dsantana87/sisget-client:1.0.0
+    image: dsantana87/sis-client:1.0.0
     deploy:
       labels:
         - "traefik.enable=true"
