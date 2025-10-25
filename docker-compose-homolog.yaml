@@ -20,19 +20,19 @@ services:
 
   # Service Components
 
-  mysql-service:
-    image: mysql/mysql-server:1.0.0
-    container_name: sisget-mysql
-    restart: always
-    environment:
-      - MYSQL_DATABASE=sisget_prod
-      - MYSQL_ROOT_PASSWORD=root
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./database/mysql-data:/var/lib/mysql
-    networks:
-      - sisget-network
+#  mysql-service:
+#    image: mysql/mysql-server:1.0.0
+#    container_name: sisget-mysql
+#    restart: always
+#    environment:
+#      - MYSQL_DATABASE=sisget_prod
+#      - MYSQL_ROOT_PASSWORD=root
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./database/mysql-data:/var/lib/mysql
+#    networks:
+#      - sisget-network
 
 
    #MicroServices
@@ -48,57 +48,57 @@ services:
     networks:
       - sisget-network
 
-  sis-caixa:
-    image: dsantana87/sis-caixa:1.0.0
-    container_name: sis-caixa
-    restart: always
-    environment:
-      <<: *common-variables
-    ports:
-      - "8080"
-    depends_on:
-      - mysql-service
-    networks:
-      - sisget-network
-
-  sis-auth:
-    image: dsantana87/sis-auth:1.0.0
-    container_name: sis-auth
-    restart: always
-    environment:
-      <<: *common-variables
-    ports:
-      - "8080"
-    depends_on:
-      - mysql-service
-    networks:
-      - sisget-network
-
-  sis-relatorio:
-    image: dsantana87/sis-relatorio:1.0.0
-    container_name: sis-relatorio
-    restart: always
-    environment:
-      <<: *common-variables
-    ports:
-      - "8080"
-    depends_on:
-      - mysql-service
-    networks:
-      - sisget-network
-
-  sis-usuario:
-    image: dsantana87/sis-usuario:1.0.0
-    container_name: sis-usuario
-    restart: always
-    environment:
-      <<: *common-variables
-    ports:
-      - "8080"
-    networks:
-      - sisget-network
-    depends_on:
-      - mysql-service
+#  sis-caixa:
+#    image: dsantana87/sis-caixa:1.0.0
+#    container_name: sis-caixa
+#    restart: always
+#    environment:
+#      <<: *common-variables
+#    ports:
+#      - "8080"
+#    depends_on:
+#      - mysql-service
+#    networks:
+#      - sisget-network
+#
+#  sis-auth:
+#    image: dsantana87/sis-auth:1.0.0
+#    container_name: sis-auth
+#    restart: always
+#    environment:
+#      <<: *common-variables
+#    ports:
+#      - "8080"
+#    depends_on:
+#      - mysql-service
+#    networks:
+#      - sisget-network
+#
+#  sis-relatorio:
+#    image: dsantana87/sis-relatorio:1.0.0
+#    container_name: sis-relatorio
+#    restart: always
+#    environment:
+#      <<: *common-variables
+#    ports:
+#      - "8080"
+#    depends_on:
+#      - mysql-service
+#    networks:
+#      - sisget-network
+#
+#  sis-usuario:
+#    image: dsantana87/sis-usuario:1.0.0
+#    container_name: sis-usuario
+#    restart: always
+#    environment:
+#      <<: *common-variables
+#    ports:
+#      - "8080"
+#    networks:
+#      - sisget-network
+#    depends_on:
+#      - mysql-service
 
   # Front-End
 
