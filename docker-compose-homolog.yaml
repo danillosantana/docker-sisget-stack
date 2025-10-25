@@ -20,7 +20,8 @@ services:
   traefik:
     image: traefik:v3.5.3
     command:
-      - "--providers.docker.swarmmode=true"
+      - "--providers.docker.swarm=true"
+      - "providers.swarm.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
