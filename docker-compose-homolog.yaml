@@ -48,6 +48,7 @@ services:
 
   sisget-client:
     image: dsantana87/sis-client:1.0.0
+    container_name: sisget-client
     deploy:
       labels:
         - "traefik.enable=true"
@@ -61,6 +62,7 @@ services:
 
   sis-gateway:
     image: dsantana87/sis-gateway:latest
+    container_name: sis-gateway
     deploy:
       labels:
         - "traefik.enable=true"
