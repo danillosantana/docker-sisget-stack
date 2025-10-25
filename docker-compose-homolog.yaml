@@ -20,8 +20,8 @@ services:
   traefik:
     image: traefik:v3.5.3
     command:
-      - "--providers.docker.swarm=true"
-      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker=true"                     # habilita Docker provider
+      - "--providers.docker.exposedbydefault=false"  # apenas containers com label traefik.enable=true
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.le.acme.httpchallenge=true"
@@ -41,6 +41,7 @@ services:
           - node.role == manager
     networks:
       - sisget-network
+
 
   sisget-client:
     image: sisget-client:latest
