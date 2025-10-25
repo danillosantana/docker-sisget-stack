@@ -59,21 +59,22 @@ services:
     networks:
       - sisget-network
 
-#  sis-gateway:
-#    image: dsantana87/sis-gateway:1.0.0
-#    deploy:
-#      labels:
-#        - "traefik.enable=true"
-#        - "traefik.http.routers.service1.rule=Host(`18.231.153.127`)"
-#        - "traefik.http.routers.service1.entrypoints=web"
-#        - "traefik.http.routers.service1.tls=false"
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    environment:
-#      <<: *common-variables
-#    networks:
-#      - sisget-network
+  sis-gateway:
+    image: dsantana87/sis-gateway:1.0.0
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.service1.rule=PathPrefix(`/api`)"
+        - "traefik.http.routers.service1.entrypoints=web"
+        - "traefik.http.routers.service1.tls=false"
+        - "traefik.http.services.service1.loadbalancer.server.port=8080"
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      <<: *common-variables
+    networks:
+      - sisget-network
 
 networks:
   sisget-network:
