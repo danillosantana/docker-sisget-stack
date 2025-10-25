@@ -31,8 +31,6 @@ services:
       - "3306:3306"
     volumes:
       - ./database/mysql-data:/var/lib/mysql
-    networks:
-      - sisget-network
 
 
 
@@ -46,8 +44,6 @@ services:
       <<: *common-variables
     ports:
       - "8080:8080"
-    networks:
-      - sisget-network
 
   sis-caixa:
     image: dsantana87/sis-caixa:latest
@@ -59,8 +55,6 @@ services:
       - "8080"
     depends_on:
       - mysql-service
-    networks:
-      - sisget-network
 
   sis-auth:
     image: dsantana87/sis-auth:latest
@@ -72,8 +66,6 @@ services:
       - "8080"
     depends_on:
       - mysql-service
-    networks:
-      - sisget-network
 
   sis-relatorio:
     image: dsantana87/sis-relatorio:latest
@@ -85,8 +77,6 @@ services:
       - "8080"
     depends_on:
       - mysql-service
-    networks:
-      - sisget-network
 
   sis-usuario:
     image: dsantana87/sis-usuario:latest
@@ -98,8 +88,6 @@ services:
       - "8080"
     depends_on:
       - mysql-service
-    networks:
-      - sisget-network
 
   # Front-End
 
@@ -109,9 +97,4 @@ services:
     restart: always
     ports:
       - "4200:80"
-    networks:
-      - sisget-network
 
-networks:
-  sisget-network:
-    driver: overlay
