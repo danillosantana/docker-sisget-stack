@@ -20,17 +20,20 @@ services:
   traefik:
     image: traefik:v3.5.3
     command:
-      - "--providers.docker=true"                     # habilita Docker provider
-      - "--providers.docker.exposedbydefault=false"  # apenas containers com label traefik.enable=true
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--api.dashboard=true"                  # habilita dashboard
+      - "--api.insecure=true"                   # permite acesso sem autenticação (apenas dev)
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.le.acme.email=danillosantana87@gmail.com"
+      - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"   # porta do dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
@@ -41,6 +44,7 @@ services:
           - node.role == manager
     networks:
       - sisget-network
+
 
 
   sisget-client:
