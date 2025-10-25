@@ -24,8 +24,8 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--api.dashboard=true"                  # habilita dashboard
-      - "--api.insecure=true"                   # permite acesso sem autenticação (apenas dev)
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
@@ -33,7 +33,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"   # porta do dashboard
+      - "8080:8080"   # dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
@@ -45,10 +45,8 @@ services:
     networks:
       - sisget-network
 
-
-
   sisget-client:
-    image: dsantana87/sis-client:1.0.0
+    image: sisget-client:latest
     deploy:
       labels:
         - "traefik.enable=true"
@@ -72,8 +70,6 @@ services:
         condition: on-failure
     environment:
       <<: *common-variables
-    ports:
-      - "8080"
     networks:
       - sisget-network
 
