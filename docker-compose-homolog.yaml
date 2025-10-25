@@ -21,7 +21,7 @@ services:
   # Service Components
 
   mysql-service:
-    image: mysql/mysql-server:latest
+    image: mysql/mysql-server:1.0.0
     container_name: sisget-mysql
     restart: always
     environment:
@@ -31,22 +31,25 @@ services:
       - "3306:3306"
     volumes:
       - ./database/mysql-data:/var/lib/mysql
-
+    networks:
+      - sisget-network
 
 
    #MicroServices
 
   sis-gateway:
-    image: dsantana87/sis-gateway:latest
+    image: dsantana87/sis-gateway:1.0.0
     container_name: sis-gateway
     restart: always
     environment:
       <<: *common-variables
     ports:
       - "8080:8080"
+    networks:
+      - sisget-network
 
   sis-caixa:
-    image: dsantana87/sis-caixa:latest
+    image: dsantana87/sis-caixa:1.0.0
     container_name: sis-caixa
     restart: always
     environment:
@@ -55,9 +58,11 @@ services:
       - "8080"
     depends_on:
       - mysql-service
+    networks:
+      - sisget-network
 
   sis-auth:
-    image: dsantana87/sis-auth:latest
+    image: dsantana87/sis-auth:1.0.0
     container_name: sis-auth
     restart: always
     environment:
@@ -66,9 +71,11 @@ services:
       - "8080"
     depends_on:
       - mysql-service
+    networks:
+      - sisget-network
 
   sis-relatorio:
-    image: dsantana87/sis-relatorio:latest
+    image: dsantana87/sis-relatorio:1.0.0
     container_name: sis-relatorio
     restart: always
     environment:
@@ -77,24 +84,34 @@ services:
       - "8080"
     depends_on:
       - mysql-service
+    networks:
+      - sisget-network
 
   sis-usuario:
-    image: dsantana87/sis-usuario:latest
+    image: dsantana87/sis-usuario:1.0.0
     container_name: sis-usuario
     restart: always
     environment:
       <<: *common-variables
     ports:
       - "8080"
+    networks:
+      - sisget-network
     depends_on:
       - mysql-service
 
   # Front-End
 
   sisget-client:
-    image: dsantana87/sisget-client:latest
+    image: dsantana87/sisget-client:1.0.0
     container_name: sisget-client
     restart: always
     ports:
       - "4200:80"
+    networks:
+      - sisget-network
 
+
+networks:
+  sisget-network:
+    driver: overlay
