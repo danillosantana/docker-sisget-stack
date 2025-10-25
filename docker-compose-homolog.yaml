@@ -78,6 +78,15 @@ services:
     networks:
       - sisget-network
 
+  sis-usuario:
+    image: sis-usuario:latest
+    container_name: sis-usuario
+    restart: always
+    environment:
+      <<: *common-variables
+    networks:
+      - sisget-network
+
 networks:
   sisget-network:
     driver: overlay
