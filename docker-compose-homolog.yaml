@@ -78,9 +78,9 @@ services:
     networks:
       - sisget-network
 
-  sis-usuario:
-    image: sis-usuario:latest
-    container_name: sis-usuario
+  sis-auth:
+    image: sis-auth:latest
+    container_name: sis-auth
     restart: always
     environment:
       <<: *common-variables
