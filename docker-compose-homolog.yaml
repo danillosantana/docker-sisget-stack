@@ -69,6 +69,7 @@ services:
         - "traefik.http.routers.gateway.rule=PathPrefix(`/api`)"
         - "traefik.http.routers.gateway.entrypoints=web"
         - "traefik.http.routers.gateway.tls=false"
+        - "traefik.http.routers.client.priority=1" # << REDUZIR A PRIORIDADE
         - "traefik.http.services.gateway.loadbalancer.server.port=8080"
       replicas: 1
       restart_policy:
@@ -108,16 +109,13 @@ services:
     deploy: # Adicione esta seção de deploy para as labels do Traefik no Swarm
       labels:
         - "traefik.enable=true"
-        # 1. Router: Define a regra de acesso (PathPrefix /dozzle)
         - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
         - "traefik.http.routers.dozzle.entrypoints=web"
         - "traefik.http.routers.dozzle.tls=false"
-        # 2. Middleware: Remove o prefixo "/dozzle" da URL antes de enviar para o Dozzle
+        - "traefik.http.routers.dozzle.priority=100" # << ADICIONAR PRIORIDADE ALTA
         - "traefik.http.routers.dozzle.middlewares=dozzle-strip"
+        - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
         - "traefik.http.middlewares.dozzle-strip.stripprefix.prefixes=/dozzle"
-        # 3. Service: Define a porta interna do Dozzle (que é 8080 por padrão)
-        - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
-        - "traefik.http.routers.dozzle.service=dozzle-svc" # Vincula o router ao service
     networks:
       - sisget-network
 
