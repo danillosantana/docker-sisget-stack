@@ -33,9 +33,6 @@ services:
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
-        # (Opcional) proteção com autenticação básica
-      - "--traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$zvC/abcd$$EoxQ2bbgK2ByoXPuq6r2z."
-      - "--traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
     ports:
       - "80:80"
       - "443:443"
