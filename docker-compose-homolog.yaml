@@ -34,13 +34,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.15.228.149.96.nip.io`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.tls.certresolver=le"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
