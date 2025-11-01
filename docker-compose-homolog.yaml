@@ -46,26 +46,22 @@ services:
     networks:
       - sisget-network
 
-#  dozzle:
-#    image: amir20/dozzle:latest
-#    container_name: dozzle
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - ./dozzle/data:/data
-#    ports:
-#      - 8888:8080
-#    environment:
-#      DOZZLE_AUTH_PROVIDER: simple
-#    deploy:
-#      labels:
-#        - "traefik.enable=true"
-#        - "traefik.http.routers.client.rule=PathPrefix(`/dozzle`)"
-#        - "traefik.http.routers.client.entrypoints=web"
-#        - "traefik.http.routers.client.tls=false"
-#        - "traefik.http.services.client.loadbalancer.server.port=8888"
-#      replicas: 1
-#    networks:
-#      - sisget-network
+  dozzle:
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_BASE: /dozzle
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
+        - "traefik.http.routers.dozzle.entrypoints=websecure"
+        - "traefik.http.routers.dozzle.tls.certresolver=le"
+        - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
+    networks:
+      - sisget-network
 
   sisget-client:
     image: dsantana87/sis-client:latest
