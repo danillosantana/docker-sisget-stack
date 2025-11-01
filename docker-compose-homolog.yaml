@@ -107,16 +107,26 @@ services:
     environment:
       DOZZLE_AUTH_PROVIDER: simple
       DOZZLE_BASE: /dozzle
-    deploy: # Adicione esta seção de deploy para as labels do Traefik no Swarm
+    deploy:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
         - "traefik.http.routers.dozzle.entrypoints=web"
         - "traefik.http.routers.dozzle.tls=false"
-        - "traefik.http.routers.dozzle.priority=100" # << ADICIONAR PRIORIDADE ALTA
-        - "traefik.http.routers.dozzle.middlewares=dozzle-strip"
+        - "traefik.http.routers.dozzle.priority=100"
+        # Encadear middlewares: 1. StripPrefix (para remover /dozzle) e 2. RedirectRegex (para corrigir /login)
+        - "traefik.http.routers.dozzle.middlewares=dozzle-strip,dozzle-fix-redirect"
         - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
+
+        # 1. Middleware para remover /dozzle antes de enviar ao contêiner
         - "traefik.http.middlewares.dozzle-strip.stripprefix.prefixes=/dozzle"
+
+        # 2. Middleware CRÍTICO: Redireciona /login para /dozzle/login na resposta do Dozzle
+        # NOTA: O middleware RedirectRegex atua na resposta (response) quando o código é 301/302.
+        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.regex=^/(login.*)"
+        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.replacement=/dozzle/${1}"
+        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.permanent=false" # Usar 302 temporário
+      replicas: 1
     networks:
       - sisget-network
 
