@@ -46,13 +46,13 @@ services:
       placement:
         constraints:
           - node.role == manager
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.15.228.149.96.nip.io`)"
-        - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.tls.certresolver=le"
-        # aplica a middleware do arquivo dinâmico (observe o @file)
-        - "traefik.http.routers.traefik.middlewares=traefik-auth@file"
+#      labels:
+#        - "traefik.enable=true"
+#        - "traefik.http.routers.traefik.rule=Host(`traefik.15.228.149.96.nip.io`)"
+#        - "traefik.http.routers.traefik.entrypoints=websecure"
+#        - "traefik.http.routers.traefik.tls.certresolver=le"
+#        # aplica a middleware do arquivo dinâmico (observe o @file)
+#        - "traefik.http.routers.traefik.middlewares=traefik-auth@file"
     networks:
       - sisget-network
 
