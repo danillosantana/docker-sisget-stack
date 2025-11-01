@@ -46,27 +46,6 @@ services:
     networks:
       - sisget-network
 
-  dozzle:
-    image: amir20/dozzle:latest
-    container_name: dozzle
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./dozzle/data:/data
-    environment:
-      DOZZLE_AUTH_PROVIDER: simple
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
-        - "traefik.http.routers.dozzle.entrypoints=websecure"
-        - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
-#        - "traefik.http.routers.dozzle.tls.certresolver=le"
-        - "traefik.http.middlewares.strip-dozzle.stripprefix.prefixes=/dozzle"
-        - "traefik.http.middlewares.strip-dozzle.stripprefix.forceSlash=true"
-        - "traefik.http.routers.dozzle.middlewares=strip-dozzle"
-    networks:
-      - sisget-network
-
   sisget-client:
     image: dsantana87/sis-client:latest
     container_name: sisget-client
@@ -114,6 +93,31 @@ services:
     restart: always
     environment:
       <<: *common-variables
+    networks:
+      - sisget-network
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dozzle/data:/data
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_BASE: /dozzle
+    deploy: # Adicione esta seção de deploy para as labels do Traefik no Swarm
+      labels:
+        - "traefik.enable=true"
+        # 1. Router: Define a regra de acesso (PathPrefix /dozzle)
+        - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
+        - "traefik.http.routers.dozzle.entrypoints=web"
+        - "traefik.http.routers.dozzle.tls=false"
+        # 2. Middleware: Remove o prefixo "/dozzle" da URL antes de enviar para o Dozzle
+        - "traefik.http.routers.dozzle.middlewares=dozzle-strip"
+        - "traefik.http.middlewares.dozzle-strip.stripprefix.prefixes=/dozzle"
+        # 3. Service: Define a porta interna do Dozzle (que é 8080 por padrão)
+        - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
+        - "traefik.http.routers.dozzle.service=dozzle-svc" # Vincula o router ao service
     networks:
       - sisget-network
 
