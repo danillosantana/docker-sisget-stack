@@ -54,9 +54,6 @@ services:
     environment:
       DOZZLE_AUTH_PROVIDER: simple
       DOZZLE_BASE: /dozzle
-
-    ports:
-      - "8888:8080"
     deploy:
       labels:
         - "traefik.enable=true"
