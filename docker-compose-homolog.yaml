@@ -20,6 +20,7 @@ services:
   traefik:
     image: traefik:v3.5.3
     command:
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
       - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
       - "--providers.swarm.network=sisget-network"
       - "--providers.file.filename=/etc/traefik/dynamic.yml"   # habilita file provider
@@ -135,3 +136,7 @@ networks:
 
 volumes:
   traefik-letsencrypt:
+
+configs:
+  traefik_dynamic:
+    external: true
