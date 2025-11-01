@@ -27,6 +27,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--api.dashboard=true"
       - "--api.insecure=true"
+      # Configurações ACME/TLS (mantenha ou ajuste conforme sua necessidade)
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
@@ -34,7 +35,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"   # dashboard
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
@@ -52,10 +53,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.client.rule=Path(`/`)"  # **Ajuste:** Usar Path para pegar apenas a raiz
+        # 🟢 Regra Host para SISGET-CLIENT: Não conflita com PathPrefix.
+        - "traefik.http.routers.client.rule=Host(`sisget.15.228.149.96.nip.io`)"
         - "traefik.http.routers.client.entrypoints=web"
         - "traefik.http.routers.client.tls=false"
-        - "traefik.http.routers.client.priority=1"      # **Ajuste:** Prioridade mais baixa
         - "traefik.http.services.client.loadbalancer.server.port=80"
       replicas: 1
     networks:
@@ -67,10 +68,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.gateway.rule=PathPrefix(`/api`)"
+        # 🟢 Regra Host para SIS-GATEWAY: Não conflita com PathPrefix.
+        - "traefik.http.routers.gateway.rule=Host(`api.15.228.149.96.nip.io`)"
         - "traefik.http.routers.gateway.entrypoints=web"
         - "traefik.http.routers.gateway.tls=false"
-        - "traefik.http.routers.gateway.priority=10" # Prioridade intermediária
         - "traefik.http.services.gateway.loadbalancer.server.port=8080"
       replicas: 1
       restart_policy:
@@ -106,24 +107,16 @@ services:
       - ./dozzle/data:/data
     environment:
       DOZZLE_AUTH_PROVIDER: simple
-      DOZZLE_BASE: /dozzle
+      # ❌ REMOVIDO: DOZZLE_BASE não é mais necessário, pois o Dozzle está na raiz do seu próprio host.
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
+        # 🟢 Regra Host para DOZZLE: Esta regra é exata e evita qualquer colisão com PathPrefix.
+        - "traefik.http.routers.dozzle.rule=Host(`dozzle.15.228.149.96.nip.io`)"
         - "traefik.http.routers.dozzle.entrypoints=web"
         - "traefik.http.routers.dozzle.tls=false"
-        - "traefik.http.routers.dozzle.priority=100" # **Ajuste:** Prioridade alta
-        - "traefik.http.routers.dozzle.middlewares=dozzle-strip,dozzle-fix-redirect" # **Ajuste:** Encadeia os dois middlewares
         - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
-
-        # 1. Middleware StripPrefix: Remove o prefixo antes de enviar a requisição
-        - "traefik.http.middlewares.dozzle-strip.stripprefix.prefixes=/dozzle"
-
-        # 2. Middleware RedirectRegex (Solução 3): Corrige o redirecionamento absoluto do Dozzle
-        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.regex=^/(login.*)"
-        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.replacement=/dozzle/$${1}" # **CRÍTICO: O uso de $${1} é o escape necessário.**
-        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.permanent=false"
+        # ❌ REMOVIDO: Os middlewares de strip e regex não são mais necessários.
       replicas: 1
     networks:
       - sisget-network
