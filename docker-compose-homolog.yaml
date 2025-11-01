@@ -52,10 +52,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+        - "traefik.http.routers.client.rule=Path(`/`)"  # **Ajuste:** Usar Path para pegar apenas a raiz
         - "traefik.http.routers.client.entrypoints=web"
         - "traefik.http.routers.client.tls=false"
-        - "traefik.http.routers.client.priority=1"
+        - "traefik.http.routers.client.priority=1"      # **Ajuste:** Prioridade mais baixa
         - "traefik.http.services.client.loadbalancer.server.port=80"
       replicas: 1
     networks:
@@ -70,7 +70,7 @@ services:
         - "traefik.http.routers.gateway.rule=PathPrefix(`/api`)"
         - "traefik.http.routers.gateway.entrypoints=web"
         - "traefik.http.routers.gateway.tls=false"
-        - "traefik.http.routers.client.priority=10" # << REDUZIR A PRIORIDADE
+        - "traefik.http.routers.gateway.priority=10" # Prioridade intermediária
         - "traefik.http.services.gateway.loadbalancer.server.port=8080"
       replicas: 1
       restart_policy:
@@ -113,15 +113,16 @@ services:
         - "traefik.http.routers.dozzle.rule=PathPrefix(`/dozzle`)"
         - "traefik.http.routers.dozzle.entrypoints=web"
         - "traefik.http.routers.dozzle.tls=false"
-        - "traefik.http.routers.dozzle.priority=100"
-        - "traefik.http.routers.dozzle.middlewares=dozzle-strip,dozzle-fix-redirect"
+        - "traefik.http.routers.dozzle.priority=100" # **Ajuste:** Prioridade alta
+        - "traefik.http.routers.dozzle.middlewares=dozzle-strip,dozzle-fix-redirect" # **Ajuste:** Encadeia os dois middlewares
         - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
 
+        # 1. Middleware StripPrefix: Remove o prefixo antes de enviar a requisição
         - "traefik.http.middlewares.dozzle-strip.stripprefix.prefixes=/dozzle"
 
-        # Correção do escape de variável: $${1}
+        # 2. Middleware RedirectRegex (Solução 3): Corrige o redirecionamento absoluto do Dozzle
         - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.regex=^/(login.*)"
-        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.replacement=/dozzle/$${1}"
+        - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.replacement=/dozzle/$${1}" # **CRÍTICO: O uso de $${1} é o escape necessário.**
         - "traefik.http.middlewares.dozzle-fix-redirect.redirectregex.permanent=false"
       replicas: 1
     networks:
