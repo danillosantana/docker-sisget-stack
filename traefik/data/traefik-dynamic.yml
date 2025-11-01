@@ -1,7 +1,15 @@
 http:
+  routers:
+    traefik-dashboard:
+      rule: Host(`traefik.15.228.149.96.nip.io`)
+      service: api@internal
+      entryPoints:
+        - web
+      middlewares:
+        - auth
+
   middlewares:
-    traefik-auth:
+    auth:
       basicAuth:
-        # lista de entries no formato "user:hash"
         users:
-          - "admin:$2a$11$eXLvvpnwHmpOFmJfU1FEcuKI0bcZA3/pBs16kNDR524mQ25YH7JHC"
+          - "admin:$2y$10$2ERCTeO8TqF6CeeOQxQW9OoD8zn5uKZrQ3V1o9KNYzKzS5BlYsy5C"
