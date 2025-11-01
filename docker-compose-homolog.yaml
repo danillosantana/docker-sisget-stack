@@ -35,7 +35,7 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"   # dashboard
-      - "8888:8888"
+      - "9999:9999"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
@@ -55,7 +55,7 @@ services:
       DOZZLE_AUTH_PROVIDER: simple
       DOZZLE_BASE: /dozzle
     ports:
-      - "8888:8080"
+      - "9999:8080"
     deploy:
       labels:
         - "traefik.enable=true"
