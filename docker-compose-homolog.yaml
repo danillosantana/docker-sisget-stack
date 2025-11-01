@@ -26,9 +26,6 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--api.dashboard=true"
-      - "--api.insecure=true"
-      - "--traefik.http.routers.traefik-dashboard.rule=Host(`traefik.15.228.149.96.nip.io`)"
-      # Configurações ACME/TLS (mantenha ou ajuste conforme sua necessidade)
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
@@ -41,6 +38,15 @@ services:
       - "traefik-letsencrypt:/letsencrypt"
     deploy:
       replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.15.228.149.96.nip.io`)"
+        - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+        - "traefik.http.routers.traefik-dashboard.tls.certresolver=le"
+        - "traefik.http.routers.traefik-dashboard.service=api@internal"
+        # opcional: proteção básica
+        - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$zvC/abcd$$EoxQ2bbgK2ByoXPuq6r2z."
+        - "traefik.http.routers.traefik-dashboard.middlewares=auth"
       placement:
         constraints:
           - node.role == manager
