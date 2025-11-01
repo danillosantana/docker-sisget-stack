@@ -20,14 +20,13 @@ services:
   traefik:
     image: traefik:v3.5.3
     command:
-      - "--providers.file.filename=/etc/traefik/dynamic.yml"
       - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
       - "--providers.swarm.network=sisget-network"
-      - "--providers.file.filename=/etc/traefik/dynamic.yml"   # habilita file provider
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--api.dashboard=true"
+      - "--api.insecure=true"  # desative o dashboard inseguro
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
@@ -38,21 +37,13 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
-    configs:
-      - source: traefik_dynamic
-        target: /etc/traefik/dynamic.yml
     deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-#      labels:
-#        - "traefik.enable=true"
-#        - "traefik.http.routers.traefik.rule=Host(`traefik.15.228.149.96.nip.io`)"
-#        - "traefik.http.routers.traefik.entrypoints=websecure"
-#        - "traefik.http.routers.traefik.tls.certresolver=le"
-#        # aplica a middleware do arquivo dinâmico (observe o @file)
-#        - "traefik.http.routers.traefik.middlewares=traefik-auth@file"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.15.228.149.96.nip.io`)"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.tls.certresolver=le"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     networks:
       - sisget-network
 
@@ -136,7 +127,3 @@ networks:
 
 volumes:
   traefik-letsencrypt:
-
-configs:
-  traefik_dynamic:
-    external: true
