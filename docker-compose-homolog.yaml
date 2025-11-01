@@ -69,7 +69,7 @@ services:
       labels:
         - "traefik.enable=true"
         # 🟢 Regra Host para SIS-GATEWAY: Não conflita com PathPrefix.
-        - "traefik.http.routers.gateway.rule=Host(`api.15.228.149.96.nip.io/`)"
+        - "traefik.http.routers.gateway.rule=Host(`api.15.228.149.96.nip.io`)"
         - "traefik.http.routers.gateway.entrypoints=web"
         - "traefik.http.routers.gateway.tls=false"
         - "traefik.http.services.gateway.loadbalancer.server.port=8080"
