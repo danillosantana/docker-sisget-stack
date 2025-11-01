@@ -27,15 +27,18 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--api.dashboard=true"
       - "--api.insecure=true"
+      - "--traefik.http.routers.traefik-dashboard.rule=Host(`traefik.15.228.149.96.nip.io`)"
       # Configurações ACME/TLS (mantenha ou ajuste conforme sua necessidade)
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=seu-email@dominio.com"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+        # (Opcional) proteção com autenticação básica
+      - "--traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$zvC/abcd$$EoxQ2bbgK2ByoXPuq6r2z."
+      - "--traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
