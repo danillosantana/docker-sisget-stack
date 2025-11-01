@@ -1,0 +1,7 @@
+http:
+  middlewares:
+    traefik-auth:
+      basicAuth:
+        # lista de entries no formato "user:hash"
+        users:
+          - "admin:$2a$11$eXLvvpnwHmpOFmJfU1FEcuKI0bcZA3/pBs16kNDR524mQ25YH7JHC"
